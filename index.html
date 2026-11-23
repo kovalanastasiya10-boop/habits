@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f5f3b">
+<title>Атомные привычки</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: тёплый, поддерживающий тренер — коротко и по делу
+   IDEA: росток из книги — растение растёт от выполненных за день привычек
+   PICTURE: живой росток в шапке «Сегодня» + кривая 1% в «Прогрессе»
+   COLOUR and TYPE: глубокий зелёный, тёплая земля, акцент — мандарин; Unbounded + Manrope
+   LAYOUT: одна колонка, как в приложении; нижняя навигация с тремя вкладками */
+:root{color-scheme:light dark;
+--bg:light-dark(#f6f3ea,#101712);--card:light-dark(#fff,#18231b);--ink:light-dark(#18261c,#e9efe6);
+--mute:light-dark(#5d6b60,#9db0a1);--green:light-dark(#1f5f3b,#5fc98a);--leaf:light-dark(#3d9a5b,#7fdc9f);
+--soil:light-dark(#7a5232,#a8784f);--acc:light-dark(#e8761c,#ff9a45);--line:light-dark(#e3ddcc,#26352a);--soft:light-dark(#e8f2e7,#1d2f22)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Manrope,system-ui,sans-serif;overflow-x:clip;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+h1,h2,h3{font-family:Unbounded,Manrope,sans-serif;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(26px,7vw,34px)}h2{font-size:20px;margin:28px 0 12px}h3{font-size:16px}
+.wrap{max-width:640px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 16px}
+.hero{background:var(--green);color:#f4fbef;border-radius:0 0 28px 28px;padding:max(20px,env(safe-area-inset-top)) 20px 18px;margin:0 -16px;display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:8px;align-items:end}
+.hero p{margin:6px 0 0;opacity:.85}.big{font:800 44px/1 Unbounded,sans-serif}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:10px 0}
+.habit{display:grid;grid-template-columns:56px minmax(0,1fr) 44px;gap:12px;align-items:center}
+.chk{width:56px;height:56px;border-radius:50%;border:3px solid var(--leaf);background:none;cursor:pointer;display:grid;place-items:center;color:#fff;transition:transform .15s}
+.chk.on{background:var(--leaf);border-color:var(--leaf)}.chk.bad{border-color:var(--acc)}.chk.bad.on{background:var(--acc)}
+.chk:active{transform:scale(.92)}
+.sub{color:var(--mute);font-size:14px;margin-top:2px}
+.tag{display:inline-block;font-size:13px;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--green);margin:6px 6px 0 0;white-space:nowrap}
+.warn{background:light-dark(#fff1e3,#33220f);color:var(--acc)}
+.more{width:44px;height:44px;border:0;background:none;color:var(--mute);border-radius:12px;cursor:pointer;font-size:22px}
+button,input,textarea,select{font:inherit}
+.btn{min-height:48px;border-radius:14px;border:0;padding:0 18px;font-weight:800;cursor:pointer;background:var(--acc);color:#fff}
+.btn.ghost{background:var(--soft);color:var(--green)}.btn.red{background:#c23b2b}.btn.w{width:100%}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav button{flex:1;max-width:200px;min-height:56px;border:0;background:none;color:var(--mute);font-weight:600;font-size:13px;cursor:pointer;display:grid;place-items:center;gap:2px}
+nav button.on{color:var(--green)}nav svg{width:24px;height:24px}
+.fab{position:fixed;right:max(16px,calc(50vw - 304px));bottom:calc(84px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;font-size:30px;padding:0;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:4}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:end;justify-content:center;z-index:9}
+.sheet.open{display:flex}
+.panel{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 4px}
+input,textarea,select{width:100%;font-size:16px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+textarea{min-height:60px;resize:vertical}
+.law{border-left:4px solid var(--leaf);padding:4px 0 4px 12px;margin-top:18px}.law b{font-family:Unbounded,sans-serif;font-size:14px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--soft);padding:4px;border-radius:14px}
+.seg button{min-height:44px;border:0;border-radius:11px;background:none;font-weight:800;color:var(--mute);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink)}
+.heat{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:10px;max-width:250px}
+.heat i{aspect-ratio:1;border-radius:5px;background:var(--line)}.heat i.d{background:var(--leaf)}.heat i.b{background:var(--acc)}.heat i.t{outline:2px solid var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;font-size:13px;line-height:1.3;overflow-wrap:anywhere;hyphens:auto}
+.stats b{display:block;font:800 26px Unbounded,sans-serif;color:var(--green)}
+.fig{position:relative;height:220px}.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+.row input{width:24px;height:24px;flex:none;margin-top:1px;accent-color:var(--leaf)}
+.n{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--leaf);color:#fff;font-weight:800;font-size:14px}
+.n.o{background:var(--acc)}
+.empty{text-align:center;padding:28px 12px;color:var(--mute)}
+.toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:10;font-weight:600;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+#plant .grow{transform-origin:65px 128px;transition:transform .6s cubic-bezier(.3,1.4,.6,1)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="v-today">
+  <header class="hero">
+    <div>
+      <div id="today-date" style="opacity:.8;font-weight:600"></div>
+      <h1>Атомные привычки</h1>
+      <p id="today-msg">1% лучше каждый день</p>
+      <div style="margin-top:12px"><span class="big" id="today-pct">0</span><span style="font-weight:800"> % дня</span></div>
+    </div>
+    <svg id="plant" viewBox="0 0 130 150" aria-hidden="true">
+      <ellipse cx="65" cy="134" rx="56" ry="14" fill="#7a5232"/>
+      <ellipse cx="65" cy="128" rx="44" ry="10" fill="#9a6a42"/>
+      <g class="grow" id="sprout">
+        <path d="M65 128 C64 100 66 80 65 48" stroke="#8fe0a8" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path id="lf1" d="M65 96 C45 96 32 84 30 70 C48 70 62 80 65 96Z" fill="#7fdc9f"/>
+        <path id="lf2" d="M65 84 C85 84 100 72 102 56 C82 56 68 66 65 84Z" fill="#a6ecbd"/>
+        <path id="lf3" d="M65 60 C52 58 44 46 44 34 C58 36 66 46 65 60Z" fill="#7fdc9f"/>
+        <path id="lf4" d="M65 52 C78 50 88 38 88 24 C74 26 66 38 65 52Z" fill="#a6ecbd"/>
+      </g>
+    </svg>
+  </header>
+  <div id="list"></div>
+</section>
+
+<section id="v-progress" hidden>
+  <h1 style="margin-top:8px">Прогресс</h1>
+  <p class="sub">Каждое выполнение — голос за человека, которым вы хотите стать.</p>
+  <div class="stats" style="margin-top:14px">
+    <div><b id="s-votes">0</b>голосов за нового себя</div>
+    <div><b id="s-best">0</b>лучшая серия, дней</div>
+    <div><b id="s-week">0%</b>выполнено за 7 дней</div>
+  </div>
+  <h2>Сила 1%</h2>
+  <div class="card">
+    <div class="fig"><svg id="curve" role="img" aria-label="Рост на 1% и спад на 1% в день за год"></svg></div>
+    <p class="sub">На 1% лучше каждый день — за год в 37,8 раза лучше. На 1% хуже — почти ноль. Важна траектория, а не текущий результат.</p>
+  </div>
+  <h2>Календарь привычек</h2>
+  <div id="heats"></div>
+</section>
+
+<section id="v-system" hidden>
+  <h1 style="margin-top:8px">Система</h1>
+  <p class="sub">Цели задают направление, системы обеспечивают прогресс.</p>
+
+  <h2>7 дней внедрения</h2>
+  <div class="card" id="plan"></div>
+
+  <h2>Четыре закона</h2>
+  <div class="card">
+    <div class="row"><span class="n">1</span><div><b>Очевидно.</b> Сигнал → действие. Чёткий план «когда и где», привязка к существующей привычке, подготовленная среда.</div></div>
+    <div class="row"><span class="n">2</span><div><b>Привлекательно.</b> Свяжите привычку с приятным и окружите себя людьми, для которых это норма.</div></div>
+    <div class="row"><span class="n">3</span><div><b>Просто.</b> Минимум усилий. Правило 2 минут: начните с версии, которая занимает пару минут.</div></div>
+    <div class="row"><span class="n">4</span><div><b>Приятно.</b> Небольшая награда сразу после и отметка в трекере закрепляют поведение.</div></div>
+  </div>
+
+  <h2>Обратные законы — от плохих привычек</h2>
+  <div class="card">
+    <div class="row"><span class="n o">1</span><div><b>Незаметно</b> — уберите сигналы из среды.</div></div>
+    <div class="row"><span class="n o">2</span><div><b>Непривлекательно</b> — держите в голове последствия.</div></div>
+    <div class="row"><span class="n o">3</span><div><b>Сложно</b> — добавьте препятствия и лишние шаги.</div></div>
+    <div class="row"><span class="n o">4</span><div><b>Неприятно</b> — введите ответственность перед другим человеком.</div></div>
+  </div>
+
+  <h2>Три уровня изменений</h2>
+  <div class="card">
+    <div class="row"><span class="n">1</span><div><b>Идентичность</b> — кем я хочу стать? Начинайте отсюда.</div></div>
+    <div class="row"><span class="n">2</span><div><b>Процессы</b> — какие действия я совершаю?</div></div>
+    <div class="row"><span class="n">3</span><div><b>Результаты</b> — чего я хочу достичь?</div></div>
+  </div>
+
+  <h2>Мастерство и долгий рост</h2>
+  <div class="card">
+    <div class="row"><span class="n">✓</span><div>Повторение формирует автоматизм — считайте повторы, а не дни.</div></div>
+    <div class="row"><span class="n">✓</span><div>Не пропускайте дважды: один пропуск — случайность, два — начало новой привычки.</div></div>
+    <div class="row"><span class="n">✓</span><div>Подбирайте сложность чуть выше своего уровня.</div></div>
+    <div class="row"><span class="n">✓</span><div>Скука — главный враг. Держите регулярность, даже когда неинтересно.</div></div>
+    <div class="row"><span class="n">✓</span><div>Раз в месяц пересматривайте систему: что работает, что убрать.</div></div>
+  </div>
+
+  <h2>Резервная копия</h2>
+  <div class="card">
+    <p class="sub" style="margin-top:0">Данные хранятся только на этом телефоне. Скопируйте код и сохраните его в заметках — им можно восстановить всё на другом устройстве.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" id="b-export">Скопировать данные</button>
+      <button class="btn ghost" id="b-import">Восстановить</button>
+    </div>
+    <textarea id="backup" hidden placeholder="Вставьте сюда код резервной копии" style="margin-top:10px;min-height:110px"></textarea>
+    <button class="btn w" id="b-doimport" hidden style="margin-top:8px">Загрузить из кода</button>
+  </div>
+  <p class="sub" style="text-align:center;margin:24px 0">Не меняй всё сразу. Начни с одной привычки и повторяй её каждый день.</p>
+</section>
+</div>
+
+<button class="btn fab" id="b-add" aria-label="Новая привычка">+</button>
+
+<nav>
+  <button data-v="today" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21v-9M12 12c-4 0-6-3-6-6 3 0 6 2 6 6zM12 15c3 0 6-2 6-6-3 0-6 2-6 6z"/></svg>Сегодня</button>
+  <button data-v="progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M6 16v-4M11 16V9M16 16V5"/></svg>Прогресс</button>
+  <button data-v="system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h7v14H4zM13 5h7v14h-7z"/></svg>Система</button>
+</nav>
+
+<div class="sheet" id="sheet"><div class="panel" id="panel"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+{
+const KEY='atomic-habits-v1';
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||null}catch(e){return null}};
+const st=load()||{habits:[],plan:{}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dk=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const day=(n=0)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+n);return d};
+const T=()=>dk(day());
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200)};
+
+const streak=h=>{let n=0,i=h.log[T()]?0:-1;while(h.log[dk(day(i))]){n++;i--}return n};
+const best=h=>{const ks=Object.keys(h.log).filter(k=>h.log[k]).sort();let b=0,c=0,prev=null;
+  for(const k of ks){const d=new Date(k+'T12:00');c=prev&&Math.round((d-prev)/864e5)===1?c+1:1;b=Math.max(b,c);prev=d}return b};
+const pl=(n,a,b,c)=>{const m=n%10,h=n%100;return m===1&&h!==11?a:m>=2&&m<=4&&(h<12||h>14)?b:c};
+const votes=h=>Object.values(h.log).filter(Boolean).length;
+
+const LAWS={
+ good:[['Закон 1 · Очевидно','После того как я…','cue','напр. налью утренний кофе'],
+       ['Закон 2 · Привлекательно','Совмещу с приятным','attr','напр. слушаю любимый подкаст'],
+       ['Закон 3 · Просто','Версия на 2 минуты','easy','напр. надеть кроссовки и выйти'],
+       ['Закон 4 · Приятно','Награда сразу после','sat','напр. отмечу в трекере и выпью какао']],
+ bad:[['Обратный закон 1 · Незаметно','Как уберу сигнал','cue','напр. телефон заряжается в другой комнате'],
+      ['Обратный закон 2 · Непривлекательно','Какие последствия я вижу','attr','напр. недосып и тяжёлое утро'],
+      ['Обратный закон 3 · Сложно','Какое препятствие добавлю','easy','напр. выйти из соцсетей, удалить приложение'],
+      ['Обратный закон 4 · Неприятно','Перед кем отчитываюсь','sat','напр. подруга, договорённость о штрафе']]};
+
+function renderToday(){
+  const d=new Date();
+  $('#today-date').textContent=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
+  const hs=st.habits,done=hs.filter(h=>h.log[T()]).length,p=hs.length?Math.round(done/hs.length*100):0;
+  $('#today-pct').textContent=p;
+  $('#today-msg').textContent=!hs.length?'Начните с одной маленькой привычки':p===100?'Система сработала. Голос за нового себя отдан':done?'Хорошее начало — продолжайте':'1% лучше каждый день';
+  const r=hs.length?done/hs.length:0;
+  $('#sprout').style.transform=`scale(${.35+r*.65})`;
+  ['lf1','lf2','lf3','lf4'].forEach((id,i)=>$('#'+id).style.opacity=r>=i/4+.01||(i===0&&r>0)?1:.0);
+  if(!hs.length){$('#list').innerHTML=`<div class="empty"><h3 style="color:var(--ink)">Пока нет привычек</h3>
+    <p>Нажмите «+» и создайте первую по четырём законам. Или возьмите готовые примеры и отредактируйте их под себя.</p>
+    <button class="btn ghost" id="b-sample">Добавить примеры</button></div>`;
+    $('#b-sample').onclick=()=>{const t=Date.now();st.habits.push(
+      {id:t,type:'good',name:'10 минут прогулки',who:'человек, который заботится о теле',cue:'пообедаю',when:'13:30, вокруг офиса/дома',attr:'слушаю подкаст',easy:'надеть обувь и выйти на 2 минуты',sat:'отметка в трекере',log:{}},
+      {id:t+1,type:'good',name:'Читать 2 страницы',who:'человек, который читает',cue:'лягу в кровать',when:'перед сном',attr:'чай с мятой',easy:'открыть книгу и прочесть 1 страницу',sat:'отметка в трекере',log:{}},
+      {id:t+2,type:'bad',name:'Не листать ленту перед сном',who:'человек, который высыпается',cue:'телефон заряжается в коридоре',attr:'тяжёлое утро',easy:'выйти из соцсетей',sat:'отчитываюсь подруге',log:{}});save();renderAll()};return}
+  $('#list').innerHTML=hs.map(h=>{const on=!!h.log[T()],s=streak(h),miss=!on&&!h.log[dk(day(-1))]&&Object.keys(h.log).length>0;
+    const how=h.type==='good'?(h.cue?`После того как ${esc(h.cue)} → ${esc(h.easy||h.name)}`:esc(h.easy||'')):(h.cue?'Сигнал убран: '+esc(h.cue):'');
+    return `<div class="card habit"><button class="chk ${h.type==='bad'?'bad':''} ${on?'on':''}" data-t="${h.id}" aria-pressed="${on}" aria-label="Отметить: ${esc(h.name)}">
+      ${on?'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg>':''}</button>
+      <div><h3>${esc(h.name)}</h3>${how?`<div class="sub">${how}</div>`:''}
+      <span class="tag">серия ${s} ${pl(s,"день","дня","дней")}</span>${h.when?`<span class="tag">${esc(h.when)}</span>`:''}${h.type==='bad'?'<span class="tag warn">отказ</span>':''}
+      ${miss?'<span class="tag warn">Не пропускай дважды</span>':''}</div>
+      <button class="more" data-e="${h.id}" aria-label="Изменить">⋯</button></div>`}).join('');
+}
+
+function renderProgress(){
+  const hs=st.habits;
+  $('#s-votes').textContent=hs.reduce((a,h)=>a+votes(h),0);
+  $('#s-best').textContent=hs.reduce((a,h)=>Math.max(a,best(h)),0);
+  let tot=0,dn=0;for(const h of hs)for(let i=0;i>-7;i--){tot++;if(h.log[dk(day(i))])dn++}
+  $('#s-week').textContent=(tot?Math.round(dn/tot*100):0)+'%';
+  $('#heats').innerHTML=hs.length?hs.map(h=>{const start=day(-34),off=(start.getDay()+6)%7;let c='';
+    for(let i=0;i<off;i++)c+='<i style="visibility:hidden"></i>';
+    for(let i=-34;i<=0;i++){const k=dk(day(i));c+=`<i class="${h.log[k]?(h.type==='bad'?'b':'d'):''} ${i===0?'t':''}" title="${k}"></i>`}
+    return `<div class="card"><h3>${esc(h.name)}</h3>${h.who?`<div class="sub">Я ${esc(h.who)}</div>`:''}
+      <span class="tag">${votes(h)} ${pl(votes(h),"голос","голоса","голосов")}</span><span class="tag">лучшая серия ${best(h)}</span><div class="heat">${c}</div></div>`}).join('')
+    :'<div class="empty">Здесь появится календарь, когда вы добавите привычку.</div>';
+  drawCurve();
+}
+
+const curve=$('#curve');
+function drawCurve(){const W=curve.clientWidth,H=curve.clientHeight;if(!W)return;
+  const pl=8,pr=W<420?54:66,pt=16,pb=26,max=38,x=d=>pl+d/365*(W-pl-pr),y=v=>pt+(1-v/max)*(H-pt-pb);
+  let up='',dn='';for(let d=0;d<=365;d+=5){up+=(d?'L':'M')+x(d).toFixed(1)+' '+y(1.01**d).toFixed(1);dn+=(d?'L':'M')+x(d).toFixed(1)+' '+y(.99**d).toFixed(1)}
+  const mute=getComputedStyle(document.body).getPropertyValue('--mute');
+  curve.innerHTML=`<line x1="${pl}" x2="${W-pr}" y1="${y(0)}" y2="${y(0)}" stroke="${mute}" stroke-opacity=".4"/>
+   <path d="${up}" fill="none" stroke="var(--leaf)" stroke-width="3.5"/><path d="${dn}" fill="none" stroke="var(--acc)" stroke-width="3.5"/>
+   <text x="${W-pr+6}" y="${y(37.8)+5}" fill="var(--green)" font-weight="800" font-size="14">×37,8</text>
+   <text x="${W-pr+6}" y="${y(0)-6}" fill="var(--acc)" font-weight="800" font-size="14">×0,03</text>
+   <text x="${pl}" y="${H-6}" fill="${mute}" font-size="13">день 1</text><text x="${W-pr}" y="${H-6}" fill="${mute}" font-size="13" text-anchor="end">день 365</text>
+   <text x="${x(150)}" y="${y(6)}" fill="var(--green)" font-size="13" font-weight="600">+1% в день</text>`}
+const ro=new ResizeObserver(drawCurve);ro.observe(curve);
+
+const PLAN=['Выбрать одну привычку','Определить время и место','Подготовить среду','Начать с версии на 2 минуты','Добавить награду','Отмечать прогресс каждый день','Проанализировать неделю и улучшить систему'];
+function renderPlan(){$('#plan').innerHTML=PLAN.map((p,i)=>`<label class="row" style="margin:0;font-weight:400;cursor:pointer"><input type="checkbox" data-p="${i}" ${st.plan[i]?'checked':''}><span><b>День ${i+1}.</b> ${p}</span></label>`).join('')}
+
+function openForm(id){
+  const h=st.habits.find(x=>x.id==id)||{type:'good',log:{}};let type=h.type;
+  const draw=()=>{const L=LAWS[type];$('#panel').innerHTML=`<h2 style="margin-top:0">${h.id?'Изменить привычку':'Новая привычка'}</h2>
+   <div class="seg"><button type="button" data-ty="good" class="${type==='good'?'on':''}">Сформировать</button><button type="button" data-ty="bad" class="${type==='bad'?'on':''}">Избавиться</button></div>
+   <form id="f">
+   <label for="f-name">${type==='good'?'Привычка':'От чего отказываюсь'} *</label><input id="f-name" required value="${esc(h.name)}" placeholder="${type==='good'?'напр. 10 минут прогулки':'напр. листать ленту перед сном'}">
+   <label for="f-who">Я человек, который…</label><input id="f-who" value="${esc(h.who)}" placeholder="напр. заботится о здоровье">
+   ${type==='good'?`<label for="f-when">Когда и где</label><input id="f-when" value="${esc(h.when)}" placeholder="напр. 7:30, на кухне">`:''}
+   ${L.map(([t,l,k,ph])=>`<div class="law" style="border-color:${type==='good'?'var(--leaf)':'var(--acc)'}"><b>${t}</b><label for="f-${k}">${l}</label><input id="f-${k}" value="${esc(h[k])}" placeholder="${ph}"></div>`).join('')}
+   <button class="btn w" style="margin-top:20px">Сохранить</button></form>
+   <div style="display:flex;gap:8px;margin-top:8px">${h.id?'<button class="btn red" id="f-del" style="flex:1">Удалить</button>':''}<button class="btn ghost" id="f-x" style="flex:1">Отмена</button></div>`;
+   $('#panel').querySelectorAll('[data-ty]').forEach(b=>b.onclick=()=>{collect();type=b.dataset.ty;draw()});
+   $('#f').onsubmit=e=>{e.preventDefault();collect();h.type=type;if(!h.name.trim())return;
+     if(!h.id){h.id=Date.now();st.habits.push(h)}save();close();renderAll();toast('Сохранено. Начните с версии на 2 минуты')};
+   $('#f-x').onclick=close;
+   const del=$('#f-del');if(del)del.onclick=()=>{if(del.dataset.s){st.habits=st.habits.filter(x=>x!==h);save();close();renderAll()}else{del.dataset.s=1;del.textContent='Точно удалить?'}};
+  };
+  const collect=()=>{for(const k of ['name','who','when','cue','attr','easy','sat']){const el=$('#f-'+k);if(el)h[k]=el.value.trim()}};
+  draw();$('#sheet').classList.add('open');setTimeout(()=>$('#f-name').focus(),50);
+}
+const close=()=>$('#sheet').classList.remove('open');
+$('#sheet').onclick=e=>{if(e.target.id==='sheet')close()};
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-t]');if(t){const h=st.habits.find(x=>x.id==t.dataset.t);
+    if(h.log[T()])delete h.log[T()];else{h.log[T()]=true;try{navigator.vibrate&&navigator.vibrate(30)}catch(_){}
+      toast(h.type==='bad'?'Удержались. Это тоже голос за себя':'Голос за то, что вы '+(h.who||'становитесь лучше'))}
+    save();renderAll();return}
+  const ed=e.target.closest('[data-e]');if(ed){openForm(ed.dataset.e);return}
+  const nv=e.target.closest('nav [data-v]');if(nv){for(const v of ['today','progress','system'])$('#v-'+v).hidden=v!==nv.dataset.v;
+    document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b===nv));$('#b-add').hidden=nv.dataset.v==='system';
+    if(nv.dataset.v==='progress')renderProgress();scrollTo(0,0)}
+});
+document.addEventListener('change',e=>{if(e.target.dataset.p!=null){st.plan[e.target.dataset.p]=e.target.checked;save()}});
+$('#b-add').onclick=()=>openForm();
+
+$('#b-export').onclick=async()=>{const code=btoa(unescape(encodeURIComponent(JSON.stringify(st))));const ta=$('#backup');ta.hidden=false;ta.value=code;
+  try{await navigator.clipboard.writeText(code);toast('Код скопирован — сохраните его в заметках')}catch(_){ta.select();toast('Выделите и скопируйте код вручную')}};
+$('#b-import').onclick=()=>{const ta=$('#backup');ta.hidden=false;ta.value='';$('#b-doimport').hidden=false;ta.focus()};
+$('#b-doimport').onclick=()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('#backup').value.trim()))));
+  if(!Array.isArray(d.habits))throw 0;st.habits=d.habits;st.plan=d.plan||{};save();renderAll();toast('Данные восстановлены');$('#b-doimport').hidden=true}catch(_){toast('Код не распознан')}};
+
+function renderAll(){renderToday();renderPlan();if(!$('#v-progress').hidden)renderProgress()}
+renderAll();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderAll()});
+try{if('serviceWorker' in navigator&&window.top===window)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(_){}
+}
+</script>
+</body>
+</html>
